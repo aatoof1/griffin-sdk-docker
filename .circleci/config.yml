@@ -12,3 +12,8 @@ jobs:
           name: Build
           command: |
             docker build -t griffin-sdk-docker .
+
+workflows:
+  build-container-workflow:
+    jobs:
+      - build
