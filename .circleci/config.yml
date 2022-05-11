@@ -17,7 +17,6 @@ workflows:
                 registry: ghcr.io
                 image: aatoof1/griffin-sdk-docker
                 tag: latest
-
 # jobs:
 #   build:
 #     docker:
