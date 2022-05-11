@@ -1,22 +1,36 @@
 # Use the latest 2.1 version of CircleCI pipeline process engine.
 # See: https://circleci.com/docs/2.0/configuration-reference
-version: 2.1
-
+version: '2.1'
 orbs:
-  docker: banzaicloud/docker@0.0.8
+  docker: circleci/docker@2.1.1
 workflows:
-  docker:
+  build-and-publish-docker-image:
     jobs:
-      - docker/custom-publish:
-          name: Publish tagged & latest image to multiple registries
-          context: dockerhub
-          login:
-            - docker/ghcr-login
-          push:
-            - docker/push:
-                registry: ghcr.io
-                image: aatoof1/griffin-sdk-docker
-                tag: latest
+      - docker/publish:
+          image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+          docker-username: $GITHUB_USER
+          docker-password: $GITHUB_TOKEN
+          registry: ghcr.io
+          image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+          tag: latest
+
+# version: 2.1
+
+# orbs:
+#   docker: banzaicloud/docker@0.0.8
+# workflows:
+#   docker:
+#     jobs:
+#       - docker/custom-publish:
+#           name: Publish tagged & latest image to multiple registries
+#           context: dockerhub
+#           login:
+#             - docker/ghcr-login
+#           push:
+#             - docker/push:
+#                 registry: ghcr.io
+#                 image: aatoof1/griffin-sdk-docker
+#                 tag: latest
 
 # jobs:
 #   build:
