@@ -3,7 +3,7 @@
 version: 2.1
 
 orbs:
-  docker: banzaicloud/docker@0.0.3
+  docker: banzaicloud/docker@0.0.8
 workflows:
   docker:
     jobs:
