@@ -11,7 +11,6 @@ workflows:
           name: Publish tagged & latest image to multiple registries
           context: dockerhub
           login:
-            - docker/login
             - docker/ghcr-login
           push:
             - docker/push:
