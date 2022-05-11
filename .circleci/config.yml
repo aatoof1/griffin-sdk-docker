@@ -8,8 +8,8 @@ workflows:
     jobs:
       - docker/publish:
           image: ${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}
-          docker-username: $GITHUB_USER
-          docker-password: $GITHUB_TOKEN
+          docker-username: ${GITHUB_USER}
+          docker-password: ${GITHUB_TOKEN}
           registry: ghcr.io
           tag: latest
 
