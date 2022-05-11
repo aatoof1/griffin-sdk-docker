@@ -13,8 +13,10 @@ jobs:
           name: Build Docker image
           command: |
             docker build -t griffin-sdk-docker .
+  push:
+    steos:
       - ghcr-login
-      - push:
+      - push
         registry: ghcr.io
         image: aatoof1/griffin-sdk-docker
         tag: latest
@@ -78,6 +80,9 @@ commands:
             <<parameters.registry>>/<<parameters.image>>:<<parameters.tag>>
 
 workflows:
-  build-container-workflow:
+  build-and-push-container-workflow:
     jobs:
       - build
+      - push:
+          requires:
+            - build
