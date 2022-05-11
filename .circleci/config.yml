@@ -19,9 +19,9 @@ jobs:
     steps:
       - ghcr-login
       - docker-push:
+          tag: latest
           registry: ghcr.io
           image: aatoof1/griffin-sdk-docker
-          tag: latest
 
 commands:
   ghcr-login:
@@ -44,24 +44,12 @@ commands:
   docker-push:
     description: Publish image conditionally
     parameters:
-      source-registry:
-        default: docker.io
-        description: Name of source registry to use
-        type: string
       registry:
         default: docker.io
         description: Name of registry to use
         type: string
-      source-image:
-        default: image
-        description: Image name
-        type: string
       image:
         description: Image name
-        type: string
-      source-tag:
-        default: '${CIRCLE_SHA1}'
-        description: Source image tag
         type: string
       tag:
         default: '${CIRCLE_TAG}'
@@ -69,11 +57,8 @@ commands:
         type: string
     steps:
       - tag:
-          source-registry: <<parameters.source-registry>>
           target-registry: <<parameters.registry>>
-          source-image: <<parameters.source-image>>
           target-image: <<parameters.image>>
-          source-tag: <<parameters.source-tag>>
           target-tag: <<parameters.tag>>
       - run:
           name: Publish
