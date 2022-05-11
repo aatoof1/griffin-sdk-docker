@@ -19,9 +19,9 @@ jobs:
     steps:
       - ghcr-login
       - docker-push:
-          tag: latest
           registry: ghcr.io
           image: aatoof1/griffin-sdk-docker
+          tag: latest
 
 commands:
   ghcr-login:
@@ -56,10 +56,6 @@ commands:
         description: Image tag
         type: string
     steps:
-      - tag:
-          target-registry: <<parameters.registry>>
-          target-image: <<parameters.image>>
-          target-tag: <<parameters.tag>>
       - run:
           name: Publish
           command: >
