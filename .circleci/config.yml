@@ -17,6 +17,7 @@ jobs:
     docker:
       - image: docker:20.10.7-git
     steps:
+      - setup_remote_docker
       - ghcr-login
       - docker-push:
           registry: ghcr.io
