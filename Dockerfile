@@ -1,9 +1,11 @@
+#syntax=docker.io/docker/dockerfile:1.4.0
 FROM ubuntu:20.04
 
 ARG ZEPHYR_SDK_VERSION=0.14.1
 ARG ZEPHYR_VERSION=3.0.0
 ARG WGET_ARGS="-q --show-progress --progress=bar:force:noscroll --no-check-certificate -P /tmp"
 ARG HOSTTYPE="x86_64"
+ARG GO_VERSION="1.18.2"
 
 # Set non-interactive frontend for apt-get to skip any user confirmations
 ENV DEBIAN_FRONTEND=noninteractive
@@ -13,6 +15,7 @@ RUN apt-get -y update && \
 	apt-get -y upgrade && \
 	apt-get -y install --no-install-recommends \
 	git \
+	openssh-client\
 	ninja-build \
 	gperf \
 	ccache \
@@ -33,7 +36,8 @@ RUN apt-get -y update && \
 	libsdl2-dev \
 	locales \
 	gosu \
-	sudo
+	sudo \
+	golang
 
 # Add the Kitware APT repository to your sources list
 RUN wget ${WGET_ARGS} https://apt.kitware.com/kitware-archive.sh && \
@@ -68,6 +72,19 @@ RUN locale-gen en_US.UTF-8
 ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US:en
 ENV LC_ALL=en_US.UTF-8
+
+RUN apt update && apt-get install -y --no-install-recommends \
+	clang-format python3 \
+	git \
+	&& rm -rf /var/lib/apt/lists/*
+
+ADD clang-format-wrapper.py /usr/bin
+ADD sizer/sizer.go /usr/bin
+ADD sizer /go/src
+RUN export GOBIN=/usr/go/bin
+
+RUN chmod 777 -R /usr/bin/clang-format-wrapper.py
+RUN chmod 777 -R /usr/bin/sizer.go
 
 ADD 'entrypoint.sh' '/opt/'
 ENTRYPOINT ["/opt/entrypoint.sh"]
