@@ -10,15 +10,14 @@ jobs:
       - checkout
       - setup_remote_docker
       - run:
-          name: Load Docker image layer cache
-          command: |
-            set +o pipefail
-            docker load -i /caches/app.tar | true
-      - run:
           name: Build Docker image
           command: |
             docker build -t griffin-sdk-docker .
       - ghcr-login
+      - push:
+        registry: ghcr.io
+        image: aatoof1/griffin-sdk-docker
+        tag: latest
 
 commands:
   ghcr-login:
@@ -38,6 +37,45 @@ commands:
           command: |
             echo "${<< parameters.token >>}" \
               | docker login ghcr.io -u "${<< parameters.user >>}" --password-stdin
+  push:
+    description: Publish image conditionally
+    parameters:
+      source-registry:
+        default: docker.io
+        description: Name of source registry to use
+        type: string
+      registry:
+        default: docker.io
+        description: Name of registry to use
+        type: string
+      source-image:
+        default: image
+        description: Image name
+        type: string
+      image:
+        description: Image name
+        type: string
+      source-tag:
+        default: '${CIRCLE_SHA1}'
+        description: Source image tag
+        type: string
+      tag:
+        default: '${CIRCLE_TAG}'
+        description: Image tag
+        type: string
+    steps:
+      - tag:
+          source-registry: <<parameters.source-registry>>
+          target-registry: <<parameters.registry>>
+          source-image: <<parameters.source-image>>
+          target-image: <<parameters.image>>
+          source-tag: <<parameters.source-tag>>
+          target-tag: <<parameters.tag>>
+      - run:
+          name: Publish
+          command: >
+            docker push
+            <<parameters.registry>>/<<parameters.image>>:<<parameters.tag>>
 
 workflows:
   build-container-workflow:
