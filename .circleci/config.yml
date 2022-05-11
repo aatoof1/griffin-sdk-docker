@@ -2,71 +2,88 @@
 # See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
-jobs:
-  build:
-    docker:
-      - image: docker:20.10.7-git
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run:
-          name: Build Docker image
-          command: |
-            docker build -t griffin-sdk-docker .
-  push:
-    docker:
-      - image: docker:20.10.7-git
-    steps:
-      - setup_remote_docker
-      - ghcr-login
-      - docker-push:
-          registry: ghcr.io
-          image: aatoof1/griffin-sdk-docker
-          tag: latest
-
-commands:
-  ghcr-login:
-    description: Login to Github Container Registry
-    parameters:
-      user:
-        description: Name of github user environment variable
-        default: GITHUB_USER
-        type: env_var_name
-      token:
-        description: Name of github token environment variable
-        default: GITHUB_TOKEN
-        type: env_var_name
-    steps:
-      - run:
-          name: Login to GHCR
-          command: |
-            echo "${<< parameters.token >>}" \
-              | docker login ghcr.io -u "${<< parameters.user >>}" --password-stdin
-  docker-push:
-    description: Publish image conditionally
-    parameters:
-      registry:
-        default: docker.io
-        description: Name of registry to use
-        type: string
-      image:
-        description: Image name
-        type: string
-      tag:
-        default: '${CIRCLE_TAG}'
-        description: Image tag
-        type: string
-    steps:
-      - run:
-          name: Publish
-          command: >
-            docker push
-            <<parameters.registry>>/<<parameters.image>>:<<parameters.tag>>
-
+version: 2.1
+orbs:
+  docker: banzaicloud/docker@0.0.3
 workflows:
-  build-and-push-container-workflow:
+  docker:
     jobs:
-      - build
-      - push:
-          requires:
-            - build
+      - docker/custom-publish:
+          name: Publish tagged & latest image to multiple registries
+          context: dockerhub
+          login:
+            - docker/ghcr-login
+          push:
+            - docker/push:
+                registry: ghcr.io
+                image: aatoof1/griffin-sdk-docker
+                tag: latest
+
+# jobs:
+#   build:
+#     docker:
+#       - image: docker:20.10.7-git
+#     steps:
+#       - checkout
+#       - setup_remote_docker
+#       - run:
+#           name: Build Docker image
+#           command: |
+#             docker build -t griffin-sdk-docker .
+#   push:
+#     docker:
+#       - image: docker:20.10.7-git
+#     steps:
+#       - setup_remote_docker
+#       - ghcr-login
+#       - docker-push:
+#           registry: ghcr.io
+#           image: aatoof1/griffin-sdk-docker
+#           tag: latest
+
+# commands:
+#   ghcr-login:
+#     description: Login to Github Container Registry
+#     parameters:
+#       user:
+#         description: Name of github user environment variable
+#         default: GITHUB_USER
+#         type: env_var_name
+#       token:
+#         description: Name of github token environment variable
+#         default: GITHUB_TOKEN
+#         type: env_var_name
+#     steps:
+#       - run:
+#           name: Login to GHCR
+#           command: |
+#             echo "${<< parameters.token >>}" \
+#               | docker login ghcr.io -u "${<< parameters.user >>}" --password-stdin
+#   docker-push:
+#     description: Publish image conditionally
+#     parameters:
+#       registry:
+#         default: docker.io
+#         description: Name of registry to use
+#         type: string
+#       image:
+#         description: Image name
+#         type: string
+#       tag:
+#         default: '${CIRCLE_TAG}'
+#         description: Image tag
+#         type: string
+#     steps:
+#       - run:
+#           name: Publish
+#           command: >
+#             docker push
+#             <<parameters.registry>>/<<parameters.image>>:<<parameters.tag>>
+
+# workflows:
+#   build-and-push-container-workflow:
+#     jobs:
+#       - build
+#       - push:
+#           requires:
+#             - build
