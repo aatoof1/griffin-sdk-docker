@@ -18,7 +18,7 @@ jobs:
       - image: docker:20.10.7-git
     steps:
       - ghcr-login
-      - push:
+      - docker-push:
           registry: ghcr.io
           image: aatoof1/griffin-sdk-docker
           tag: latest
@@ -41,7 +41,7 @@ commands:
           command: |
             echo "${<< parameters.token >>}" \
               | docker login ghcr.io -u "${<< parameters.user >>}" --password-stdin
-  push:
+  docker-push:
     description: Publish image conditionally
     parameters:
       source-registry:
