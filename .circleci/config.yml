@@ -4,7 +4,17 @@ version: '2.1'
 orbs:
   docker: circleci/docker@2.1.1
 workflows:
-  build-and-publish-docker-image:
+  build-only:
+    jobs:
+      - docker/publish:
+          deploy: false
+          image: ${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}
+          tag: latest
+          filters:
+            # ignore tags
+            tags:
+              ignore: /.*/
+  build-and-push:
     jobs:
       - docker/publish:
           image: ${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}
