@@ -13,7 +13,10 @@ workflows:
           registry: ghcr.io
           tag: ${CIRCLE_TAG}
           filters:
-            # only act on tags
+            # ignore any commit on any branch by default
+            branches:
+              ignore: /.*/
+            # only act on version tags
             tags:
               only: /.*/
 
