@@ -12,6 +12,13 @@ workflows:
           docker-password: GITHUB_TOKEN
           registry: ghcr.io
           tag: latest
+          filters:
+            # ignore any commit on any branch by default
+            branches:
+              ignore: /.*/
+            # only act on version tags
+            tags:
+              only: /.*/
 
 # version: 2.1
 
