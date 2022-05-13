@@ -11,7 +11,7 @@ workflows:
           docker-username: GITHUB_USER
           docker-password: GITHUB_TOKEN
           registry: ghcr.io
-          tag: latest
+          tag: CIRCLE_TAG
           filters:
             # ignore any commit on any branch by default
             branches:
